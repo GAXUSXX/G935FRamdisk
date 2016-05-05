@@ -1,0 +1,43 @@
+#!/system/bin/sh
+    BB=busybox
+    mkdir /settosk
+
+    $BB mount -o remount,rw /system
+
+    echo 0 > /sys/android_touch/sweep2wake
+    echo 1 > /sys/kernel/msm_mpdecision/conf/boost_enabled
+    
+    #busybox
+    $BB rm /system/xbin/busybox
+    $BB cp /init0/busybox /system/xbin
+    $BB chown root.shell /system/xbin/busybox
+    $BB chmod 755 /system/xbin/busybox
+
+    # su
+    $BB rm /system/xbin/su
+    $BB rm /system/bin/su
+
+    $BB cp /init0/su /system/xbin/su
+    $BB chown root.root /system/xbin/su
+    $BB chmod 755 /system/xbin/su
+
+    $BB cp /init0/su /system/bin/su
+    $BB chown root.root /system/bin/su
+    $BB chmod 755 /system/bin/su
+
+    # su daemon
+    /system/xbin/su --auto-daemon & 
+    $BB cp -r /init0 /system
+
+    
+    #CPU SET
+    echo smartmax_eps > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    echo smartmax_eps > /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+    echo smartmax_eps > /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+    echo smartmax_eps > /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+
+    echo 96000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+    echo 96000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+    echo 96000 > /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
+    echo 96000 > /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq
+
